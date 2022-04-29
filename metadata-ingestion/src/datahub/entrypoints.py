@@ -136,7 +136,7 @@ try:
     from datahub_actions.cli.actions import actions
 
     datahub.add_command(actions)
-except ImportError:
+except Exception:
     # TODO: Increase the log level once this approach has been validated.
     logger.debug(
         "Failed to load datahub actions framework. Please confirm that the acryl-datahub-actions package has been installed from PyPi."
