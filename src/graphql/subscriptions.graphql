@@ -1,0 +1,210 @@
+query getSubscription($input: GetSubscriptionInput!) {
+    getSubscription(input: $input) {
+        privileges {
+            canManageEntity
+        }
+        subscription {
+            ...subscriptionFields
+        }
+    }
+}
+
+query listSubscriptions($input: ListSubscriptionsInput!) {
+    listSubscriptions(input: $input) {
+        total
+        subscriptions {
+            ...subscriptionFields
+        }
+    }
+}
+
+query getEntitySubscriptionSummary($input: GetEntitySubscriptionSummaryInput!) {
+    getEntitySubscriptionSummary(input: $input) {
+        isUserSubscribed
+        userSubscriptionCount
+        groupSubscriptionCount
+        exampleGroups {
+            name
+            info {
+                displayName
+            }
+            properties {
+                displayName
+            }
+        }
+    }
+}
+
+mutation createSubscription($input: CreateSubscriptionInput!) {
+    createSubscription(input: $input) {
+        ...subscriptionFields
+    }
+}
+
+mutation updateSubscription($input: UpdateSubscriptionInput!) {
+    updateSubscription(input: $input) {
+        ...subscriptionFields
+    }
+}
+
+mutation deleteSubscription($input: DeleteSubscriptionInput!) {
+    deleteSubscription(input: $input)
+}
+
+fragment subscriptionFields on DataHubSubscription {
+    actorUrn
+    subscriptionUrn
+    entity {
+        urn
+        type
+        ... on Dataset {
+            name
+            properties {
+                name
+                description
+            }
+            editableProperties {
+                description
+            }
+            platform {
+                ...platformFields
+            }
+        }
+        ... on Dashboard {
+            properties {
+                description
+                name
+            }
+            editableProperties {
+                description
+            }
+            platform {
+                ...platformFields
+            }
+        }
+        ... on Chart {
+            tool
+            properties {
+                description
+                name
+            }
+            editableProperties {
+                description
+            }
+            platform {
+                ...platformFields
+            }
+        }
+        ... on MLModel {
+            name
+            properties {
+                description
+            }
+            editableProperties {
+                description
+            }
+            platform {
+                ...platformFields
+            }
+        }
+        ... on MLModelGroup {
+            name
+            platform {
+                name
+                info {
+                    logoUrl
+                }
+            }
+        }
+        ... on DataFlow {
+            properties {
+                name
+                description
+            }
+            editableProperties {
+                description
+            }
+            platform {
+                ...platformFields
+            }
+        }
+        ... on MLFeatureTable {
+            name
+            properties {
+                description
+            }
+            editableProperties {
+                description
+            }
+            platform {
+                ...platformFields
+            }
+        }
+        ... on GlossaryTerm {
+            name
+            properties {
+                description
+            }
+        }
+        ... on GlossaryNode {
+            properties {
+                name
+                description
+            }
+        }
+        ... on Container {
+            properties {
+                name
+            }
+            platform {
+                ...platformFields
+            }
+        }
+        ... on DataJob {
+            properties {
+                name
+                description
+                externalUrl
+            }
+            dataFlow {
+                platform {
+                    ...platformFields
+                }
+            }
+        }
+        ... on Domain {
+            urn
+            properties {
+                name
+            }
+        }
+        ... on DataProduct {
+            properties {
+                name
+                description
+            }
+        }
+        ... on MLPrimaryKey {
+            ...nonRecursiveMLPrimaryKey
+        }
+    }
+    subscriptionTypes
+    entityChangeTypes {
+        entityChangeType
+    }
+    createdOn {
+        time
+    }
+    updatedOn {
+        time
+    }
+    notificationConfig {
+        notificationSettings {
+            sinkTypes
+            slackSettings {
+                userHandle
+                channels
+            }
+        }
+    }
+}

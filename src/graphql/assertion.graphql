@@ -1,0 +1,288 @@
+fragment assertionDetails on Assertion {
+    urn
+    type
+    platform {
+        urn
+        properties {
+            displayName
+            logoUrl
+        }
+        info {
+            displayName
+            logoUrl
+        }
+    }
+    dataPlatformInstance {
+        ...dataPlatformInstanceFields
+    }
+    info {
+        type
+        description
+        datasetAssertion {
+            scope
+            aggregation
+            operator
+            parameters {
+                value {
+                    value
+                    type
+                }
+                minValue {
+                    value
+                    type
+                }
+                maxValue {
+                    value
+                    type
+                }
+            }
+            fields {
+                urn
+                path
+            }
+            nativeType
+            nativeParameters {
+                key
+                value
+            }
+            logic
+        }
+        freshnessAssertion {
+            type
+            schedule {
+                type
+                cron {
+                    cron
+                    timezone
+                }
+                fixedInterval {
+                    unit
+                    multiple
+                }
+            }
+            filter {
+                type
+                sql
+            }
+        }
+        sqlAssertion {
+            type
+            statement
+            changeType
+            operator
+            parameters {
+                ...assertionStdParametersDetails
+            }
+        }
+        fieldAssertion {
+            type
+            filter {
+                type
+                sql
+            }
+            fieldValuesAssertion {
+                field {
+                    path
+                    type
+                    nativeType
+                }
+                transform {
+                    type
+                }
+                operator
+                parameters {
+                    ...assertionStdParametersDetails
+                }
+                failThreshold {
+                    type
+                    value
+                }
+                excludeNulls
+            }
+            fieldMetricAssertion {
+                field {
+                    path
+                    type
+                    nativeType
+                }
+                metric
+                operator
+                parameters {
+                    ...assertionStdParametersDetails
+                }
+            }
+        }
+        volumeAssertion {
+            type
+            filter {
+                type
+                sql
+            }
+            rowCountTotal {
+                operator
+                parameters {
+                    ...assertionStdParametersDetails
+                }
+            }
+            rowCountChange {
+                type
+                operator
+                parameters {
+                    ...assertionStdParametersDetails
+                }
+            }
+            incrementingSegmentRowCountTotal {
+                operator
+                parameters {
+                    ...assertionStdParametersDetails
+                }
+                segment {
+                    ...incrementingSegmentSpecDetails
+                }
+            }
+            incrementingSegmentRowCountChange {
+                type
+                operator
+                parameters {
+                    ...assertionStdParametersDetails
+                }
+                segment {
+                    ...incrementingSegmentSpecDetails
+                }
+            }
+        }
+        source {
+            type
+        }
+    }
+    actions {
+        onSuccess {
+            type
+        }
+        onFailure {
+            type
+        }
+    }
+}
+
+fragment incrementingSegmentSpecDetails on IncrementingSegmentSpec {
+    field {
+        path
+        type
+        nativeType
+    }
+    transformer {
+        type
+        nativeType
+    }
+}
+
+fragment assertionStdParametersDetails on AssertionStdParameters {
+    value {
+        value
+        type
+    }
+    minValue {
+        value
+        type
+    }
+    maxValue {
+        value
+        type
+    }
+}
+
+fragment assertionResultDetails on AssertionResult {
+    type
+    actualAggValue
+    rowCount
+    missingCount
+    unexpectedCount
+    externalUrl
+    nativeResults {
+        key
+        value
+    }
+    error {
+        type
+        properties {
+            key
+            value
+        }
+    }
+}
+
+fragment assertionRunEventDetails on AssertionRunEvent {
+    timestampMillis
+    assertionUrn
+    status
+    runtimeContext {
+        key
+        value
+    }
+    result {
+        ...assertionResultDetails
+    }
+}
+
+query getAssertionRuns($assertionUrn: String!, $startTime: Long, $endTime: Long, $limit: Int) {
+    assertion(urn: $assertionUrn) {
+        urn
+        ...assertionDetails
+        runEvents(status: COMPLETE, startTimeMillis: $startTime, endTimeMillis: $endTime, limit: $limit) {
+            total
+            failed
+            succeeded
+            errored
+            runEvents {
+                ...assertionRunEventDetails
+            }
+        }
+    }
+}
+
+mutation deleteAssertion($urn: String!) {
+    deleteAssertion(urn: $urn)
+}
+
+mutation createFreshnessAssertion($input: CreateFreshnessAssertionInput!) {
+    createFreshnessAssertion(input: $input) {
+        ...assertionDetails
+    }
+}
+
+mutation createVolumeAssertion($input: CreateVolumeAssertionInput!) {
+    createVolumeAssertion(input: $input) {
+        ...assertionDetails
+    }
+}
+
+mutation createSqlAssertion($input: CreateSqlAssertionInput!) {
+    createSqlAssertion(input: $input) {
+        ...assertionDetails
+    }
+}
+
+mutation createFieldAssertion($input: CreateFieldAssertionInput!) {
+    createFieldAssertion(input: $input) {
+        ...assertionDetails
+    }
+}
+
+mutation updateFreshnessAssertion($urn: String!, $input: UpdateFreshnessAssertionInput!) {
+    updateFreshnessAssertion(urn: $urn, input: $input) {
+        ...assertionDetails
+    }
+}
+
+mutation updateAssertionActions($urn: String!, $input: AssertionActionsInput!) {
+    updateAssertionActions(urn: $urn, input: $input) {
+        ...assertionDetails
+    }
+}
+
+mutation testAssertion($input: TestAssertionInput!) {
+    testAssertion(input: $input) {
+        ...assertionResultDetails
+    }
+}

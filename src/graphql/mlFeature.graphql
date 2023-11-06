@@ -1,0 +1,14 @@
+query getMLFeature($urn: String!) {
+    mlFeature(urn: $urn) {
+        ...nonRecursiveMLFeature
+        featureTables: relationships(input: { types: ["Contains"], direction: INCOMING, start: 0, count: 100 }) {
+            ...fullRelationshipResults
+        }
+        termProposals: proposals(type: TERM_ASSOCIATION) {
+            ...proposalsFragment
+        }
+        tagProposals: proposals(type: TAG_ASSOCIATION) {
+            ...proposalsFragment
+        }
+    }
+}

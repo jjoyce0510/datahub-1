@@ -1,0 +1,11 @@
+query getMLFeatureTable($urn: String!) {
+    mlFeatureTable(urn: $urn) {
+        ...nonRecursiveMLFeatureTable
+        termProposals: proposals(type: TERM_ASSOCIATION) {
+            ...proposalsFragment
+        }
+        tagProposals: proposals(type: TAG_ASSOCIATION) {
+            ...proposalsFragment
+        }
+    }
+}
